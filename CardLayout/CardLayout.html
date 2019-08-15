@@ -1,0 +1,111 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html" ; charset="utf-8" />
+    <title>ExtJs CardLayout</title>
+    <link rel="stylesheet" href="../ext-3.3.0/resources/css/ext-all.css">
+    <script type="text/javascript" src="../ext-3.3.0/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="../ext-3.3.0/ext-all.js"></script>
+    <script type="text/javascript" src="question.js"></script>
+    <script>
+        Ext.onReady(function () {
+
+            var navHandler = function (direction) {
+
+                var wizard = Ext.getCmp('wizard').layout;
+                var prev = Ext.getCmp('move-prev');
+                var next = Ext.getCmp('move-next');
+                var activeId = wizard.activeItem.id;
+
+                if (activeId == 'card-0') {
+                    if (direction == 1) {
+                        wizard.setActiveItem(1);
+                        prev.setDisabled(false);
+                        setQuestionOneAnswer();
+                    }
+                } else if (activeId == 'card-1') {
+                    if (direction == -1) {
+                        wizard.setActiveItem(0);
+                        prev.setDisabled(true);
+                    } else {
+                        wizard.setActiveItem(2);
+                        next.setDisabled(true);
+                    }
+                    setQuestionFiftyAnswer();
+                } else if (activeId == 'card-2') {
+                    if (direction == -1) {
+                        wizard.setActiveItem(1);
+                        next.setDisabled(false);
+                    }
+                }
+            };
+
+
+            var viewport = new Ext.Viewport({
+                layout: 'border',
+                items: [{
+                    region: 'west',
+                    id: 'wizard',
+                    width: 550,
+                    title: 'OOCL Green Week Garbage Classification Exercises',
+                    layout: 'card',
+                    activeItem: 0,
+                    bodyStyle: 'padding:15px',
+                    defaults: {
+                        border: false
+                    },
+
+                    items: [{
+                        id: 'card-0',
+                        items: [questionOne]
+                    }, {
+                        id: 'card-1',
+                        items: [questionFifty]
+                    }, {
+                        id: 'card-2',
+                        items: [questionOneResult, questionFiftyResult],
+                        buttons: [{
+                            text: 'submit',
+                            handler: function () {
+                                Ext.Ajax.request({
+                                    method: 'POST',
+                                    params: Ext.getCmp('card-2').getValue,
+                                    url: 'test/abc',
+                                    success: function () {
+                                        Ext.MessageBox.alert("Sucess","Submit Success!")
+                                    },
+                                    failure: function () {
+                                        Ext.MessageBox.alert("Failure","Submit Failure!</br>There is a problem with your network!")
+                                    }
+                                });
+                            }
+                        }]
+                    }],
+
+                    bbar: [{
+                        id: 'move-prev',
+                        text: 'Prev',
+                        handler: navHandler.createDelegate(this, [-1]),
+                        disabled: true
+                    }, '->', {
+                        id: 'move-next',
+                        text: 'Next',
+                        handler: navHandler.createDelegate(this, [1])
+                    }]
+
+                }, {
+                    region: 'center',
+                    split: true,
+                    border: true
+                }]
+            });
+
+        });
+    </script>
+</head>
+
+<body>
+
+</body>
+
+</html>
